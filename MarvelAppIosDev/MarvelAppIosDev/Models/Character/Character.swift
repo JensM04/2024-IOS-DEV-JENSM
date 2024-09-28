@@ -23,3 +23,5 @@ struct Character: Codable {
     let description: String?
     let thumbnail: Thumbnail?
 }
+
+

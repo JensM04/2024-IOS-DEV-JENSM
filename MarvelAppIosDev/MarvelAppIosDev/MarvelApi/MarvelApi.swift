@@ -15,6 +15,7 @@ func generateMarvelHash(timestamp: String, privateKey: String, publicKey: String
     return hash.map { String(format: "%02hhx", $0) }.joined()
 }
 
+//gebruikt marvel dev api, met mijn unieke keys voor het requesten voor data (in dit geval een character)
 func createMarvelRequestURL(characterId: Int) -> URL? {
     let publicKey = "298bc061a7fdc1797e00216968bfc829"
     let privateKey = "f58ec5eedc48f20a59adb7d12210d4ab80b468db"

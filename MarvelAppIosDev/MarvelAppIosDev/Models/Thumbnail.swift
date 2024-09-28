@@ -7,6 +7,7 @@
 
 import Foundation
 
+//voor de foto
 struct Thumbnail: Codable {
     let path: String?
     let `extension`: String?
