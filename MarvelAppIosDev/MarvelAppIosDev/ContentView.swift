@@ -100,13 +100,11 @@ struct Character: Codable {
 
 struct Thumbnail: Codable {
     let path: String?
-    let `extension`: String? // Use backticks since `extension` is a reserved keyword
+    let `extension`: String?
     
-    // This property builds the full URL for the image
     var fullPath: String? {
         guard let path = path, let ext = `extension` else { return nil }
         
-        // Some paths may not have HTTPS, so ensure the URL is valid.
         if path.hasPrefix("http://") {
             return path.replacingOccurrences(of: "http://", with: "https://") + "." + ext
         } else if path.hasPrefix("https://") {
