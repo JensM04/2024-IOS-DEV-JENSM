@@ -9,6 +9,12 @@ import SwiftUI
 
 struct SideMenuRowView: View {
     let option: SideMenuOptionModel
+    @Binding var selectedOption: SideMenuOptionModel?
+    
+    private var isSelected: Bool {
+        selectedOption == option    
+    }
+    
     var body: some View {
         HStack{
             Image(systemName: option.ImageName)
@@ -20,10 +26,13 @@ struct SideMenuRowView: View {
             Spacer()
         }
         .padding(.leading)
-        .frame(height: 44)
+        .foregroundStyle(isSelected ? .red : .primary)
+        .frame(width: 216, height: 44)
+        .background(isSelected ? .red.opacity(0.15) : .clear)
+        .clipShape(RoundedRectangle(cornerRadius: 10))
     }
 }
 
 #Preview {
-    SideMenuRowView(option: .characters)
+    SideMenuRowView(option: .characters, selectedOption: .constant(.characters))
 }
