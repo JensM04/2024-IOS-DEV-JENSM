@@ -10,7 +10,6 @@ import FirebaseCore
 
 @main
 struct MarvelAppIosDevApp: App {
-    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
 
     init() {
         FirebaseApp.configure()
@@ -23,9 +22,6 @@ struct MarvelAppIosDevApp: App {
     }
 }
 
-class AppDelegate: NSObject, UIApplicationDelegate {
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        return true
-    }
-}
+
+
 
