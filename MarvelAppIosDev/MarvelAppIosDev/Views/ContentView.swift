@@ -6,40 +6,51 @@ struct ContentView: View {
     @State private var email = ""
     @State private var password = ""
     @State private var isPasswordVisible = false
+    @State private var userIsLoggedIn = false
     
     var body: some View {
-        ZStack{
+        NavigationView {
+            if userIsLoggedIn {
+                CharactersView()
+            } else {
+                loginView
+            }
+        }
+    }
+    
+    var loginView: some View {
+        ZStack {
             Color.white
             
             RoundedRectangle(cornerRadius: 30, style: .continuous)
                 .foregroundStyle(.linearGradient(colors: [.pink, .red], startPoint: .topLeading, endPoint: .bottomTrailing))
-                .frame(width:1000, height: 400)
+                .frame(width: 1000, height: 400)
                 .rotationEffect(.degrees(135))
                 .offset(y: -600)
             
             RoundedRectangle(cornerRadius: 30, style: .continuous)
                 .foregroundStyle(.linearGradient(colors: [.white, .white], startPoint: .topLeading, endPoint: .bottomTrailing))
-                .frame(width:1000, height: 7)
+                .frame(width: 1000, height: 7)
                 .rotationEffect(.degrees(135))
                 .offset(y: -350)
             
             RoundedRectangle(cornerRadius: 30, style: .continuous)
                 .foregroundStyle(.linearGradient(colors: [.pink, .red], startPoint: .topLeading, endPoint: .bottomTrailing))
-                .frame(width:1000, height: 400)
+                .frame(width: 1000, height: 400)
                 .rotationEffect(.degrees(135))
                 .offset(y: 600)
             
             RoundedRectangle(cornerRadius: 30, style: .continuous)
                 .foregroundStyle(.linearGradient(colors: [.white, .white], startPoint: .topLeading, endPoint: .bottomTrailing))
-                .frame(width:1000, height: 7)
+                .frame(width: 1000, height: 7)
                 .rotationEffect(.degrees(135))
                 .offset(y: 350)
             
-            VStack(spacing: 20){
+            VStack(spacing: 20) {
                 TextField("Email", text: $email)
                     .foregroundColor(.black)
                     .textFieldStyle(.plain)
-                    .placeholder(when: email.isEmpty){
+                    .placeholder(when: email.isEmpty) {
                         Text("Email").foregroundColor(.white)
                             .bold()
                     }
@@ -109,30 +120,32 @@ struct ContentView: View {
                     }
                 }
                 .padding(.top)
-
             }
             .frame(width: 350)
         }
         .ignoresSafeArea()
     }
     
-    func register(){
-        Auth.auth().createUser(withEmail: email, password: password){
-            result, error in if error != nil {
-                print(error!.localizedDescription)
+    func register() {
+        Auth.auth().createUser(withEmail: email, password: password) { result, error in
+            if let error = error {
+                print(error.localizedDescription)
                 //todo betere errorhandling
+            } else {
+                userIsLoggedIn = true
             }
         }
     }
     
-    //todo andere ui voor login
-    func login(){
-        Auth.auth().signIn(withEmail: email, password: password){
-            result, error in if error != nil {
-            print(error!.localizedDescription)
-            //todo betere errorhandling
+    func login() {
+        Auth.auth().signIn(withEmail: email, password: password) { result, error in
+            if let error = error {
+                print(error.localizedDescription)
+                //todo betere errorhandling
+            } else {
+                userIsLoggedIn = true
+            }
         }
-    }
     }
 }
 
@@ -141,7 +154,6 @@ extension View {
         when shouldShow: Bool,
         alignment: Alignment = .leading,
         @ViewBuilder placeholder: () -> Content) -> some View {
-
         ZStack(alignment: alignment) {
             placeholder().opacity(shouldShow ? 1 : 0)
             self
