@@ -11,6 +11,7 @@ struct SideMenuView: View {
     @Binding var isShowing: Bool
     @Binding var selectedTab: Int
     @State private var selectedOption: SideMenuOptionModel?
+    @EnvironmentObject var sessionManager: UserSessionManager
     
     var body: some View {
         ZStack{
@@ -34,6 +35,22 @@ struct SideMenuView: View {
                         }
                         
                         Spacer()
+                        
+                        //logout button die gebruikt maakt van sessionmanager
+                        Button(action: {
+                            sessionManager.logout()
+                            isShowing = false
+                        }) {
+                            HStack {
+                                Image(systemName: "arrow.backward.square")
+                                    .foregroundColor(.red)
+                                    .font(.headline)
+                                Text("Logout")
+                                    .foregroundColor(.red)
+                                    .bold()
+                            }
+                            .padding()
+                        }
                     }
                     .padding()
                     .frame(width: 270, alignment: .leading)

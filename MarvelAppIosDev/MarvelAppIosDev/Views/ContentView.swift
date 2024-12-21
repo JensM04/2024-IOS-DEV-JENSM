@@ -7,21 +7,27 @@ struct ContentView: View {
     @State private var password = ""
     @State private var isPasswordVisible = false
     @State private var userIsLoggedIn = false
+    @StateObject private var sessionManager = UserSessionManager()
     
+    //als gebruiker ingelogd is -> navigate to CharactersView, anders blijf op loginView
     var body: some View {
-        NavigationView {
-            if userIsLoggedIn {
-                CharactersView()
-            } else {
-                loginView
+            NavigationView {
+                if sessionManager.isLoggedIn {
+                    CharactersView()
+                } else {
+                    loginView
+                }
             }
-        }
+            .environmentObject(sessionManager)
     }
     
+    //loginview
     var loginView: some View {
         ZStack {
+            //achtergrond
             Color.white
             
+            //ui
             RoundedRectangle(cornerRadius: 30, style: .continuous)
                 .foregroundStyle(.linearGradient(colors: [.pink, .red], startPoint: .topLeading, endPoint: .bottomTrailing))
                 .frame(width: 1000, height: 400)
@@ -47,6 +53,7 @@ struct ContentView: View {
                 .offset(y: 350)
             
             VStack(spacing: 20) {
+                //email textfield
                 TextField("Email", text: $email)
                     .foregroundColor(.black)
                     .textFieldStyle(.plain)
@@ -55,10 +62,13 @@ struct ContentView: View {
                             .bold()
                     }
                 
+                //ui
                 Rectangle().frame(width: 350, height: 1)
                     .foregroundColor(.black)
                 
+                //wachtwoord textfield
                 ZStack {
+                    //als boolean true -> normaal textfield (visible text)
                     if isPasswordVisible {
                         TextField("Password", text: $password)
                             .foregroundColor(.black)
@@ -68,6 +78,7 @@ struct ContentView: View {
                                     .bold()
                             }
                     } else {
+                        //als boolean false -> securefield (invisible text)
                         SecureField("Password", text: $password)
                             .foregroundColor(.black)
                             .textFieldStyle(.plain)
@@ -77,6 +88,7 @@ struct ContentView: View {
                             }
                     }
                     
+                    //eye button voor passwoord
                     HStack {
                         Spacer()
                         Button(action: {
@@ -89,12 +101,14 @@ struct ContentView: View {
                     .padding(.trailing, 10)
                 }
                 
+                //ui
                 Rectangle().frame(width: 350, height: 1)
                     .foregroundColor(.black)
                 
+                //knoppen, horizontaal met spacing
                 HStack(spacing: 20) {
                     Button {
-                        register()
+                        sessionManager.register(email: email, password: password)
                     } label: {
                         Text("Sign up")
                             .bold()
@@ -106,8 +120,9 @@ struct ContentView: View {
                             .foregroundColor(.white)
                     }
 
+                    //login button die sessionmanager gebruikt
                     Button {
-                        login()
+                        sessionManager.login(email: email, password: password)
                     } label: {
                         Text("Log in")
                             .bold()
@@ -125,30 +140,10 @@ struct ContentView: View {
         }
         .ignoresSafeArea()
     }
-    
-    func register() {
-        Auth.auth().createUser(withEmail: email, password: password) { result, error in
-            if let error = error {
-                print(error.localizedDescription)
-                //todo betere errorhandling
-            } else {
-                userIsLoggedIn = true
-            }
-        }
-    }
-    
-    func login() {
-        Auth.auth().signIn(withEmail: email, password: password) { result, error in
-            if let error = error {
-                print(error.localizedDescription)
-                //todo betere errorhandling
-            } else {
-                userIsLoggedIn = true
-            }
-        }
-    }
 }
 
+
+//custom ui voor textfields
 extension View {
     func placeholder<Content: View>(
         when shouldShow: Bool,
@@ -161,6 +156,7 @@ extension View {
     }
 }
 
+//voor de preview
 #Preview {
     ContentView()
 }
