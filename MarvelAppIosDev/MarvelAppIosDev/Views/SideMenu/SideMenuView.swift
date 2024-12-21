@@ -12,6 +12,8 @@ struct SideMenuView: View {
     @Binding var selectedTab: Int
     @State private var selectedOption: SideMenuOptionModel?
     @EnvironmentObject var sessionManager: UserSessionManager
+
+    @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
         ZStack{
@@ -54,7 +56,9 @@ struct SideMenuView: View {
                     }
                     .padding()
                     .frame(width: 270, alignment: .leading)
-                    .background(.white)
+                    .background(
+                        colorScheme == .dark ? Color.black : Color.white
+                    )
                     Spacer()
                 }.transition(.move(edge: .leading))
                 

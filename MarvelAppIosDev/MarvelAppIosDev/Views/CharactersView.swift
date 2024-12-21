@@ -63,7 +63,6 @@ struct CharactersView: View {
                 SideMenuView(isShowing: $showMenu, selectedTab: $selectedTab)
             }
             .toolbar(showMenu ? .hidden : .visible, for: .navigationBar)
-            .navigationTitle("Home")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
