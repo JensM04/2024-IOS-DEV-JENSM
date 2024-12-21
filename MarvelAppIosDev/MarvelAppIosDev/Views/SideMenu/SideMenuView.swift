@@ -11,6 +11,9 @@ struct SideMenuView: View {
     @Binding var isShowing: Bool
     @Binding var selectedTab: Int
     @State private var selectedOption: SideMenuOptionModel?
+    @EnvironmentObject var sessionManager: UserSessionManager
+
+    @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
         ZStack{
@@ -34,10 +37,28 @@ struct SideMenuView: View {
                         }
                         
                         Spacer()
+                        
+                        //logout button die gebruikt maakt van sessionmanager
+                        Button(action: {
+                            sessionManager.logout()
+                            isShowing = false
+                        }) {
+                            HStack {
+                                Image(systemName: "arrow.backward.square")
+                                    .foregroundColor(.red)
+                                    .font(.headline)
+                                Text("Logout")
+                                    .foregroundColor(.red)
+                                    .bold()
+                            }
+                            .padding()
+                        }
                     }
                     .padding()
                     .frame(width: 270, alignment: .leading)
-                    .background(.white)
+                    .background(
+                        colorScheme == .dark ? Color.black : Color.white
+                    )
                     Spacer()
                 }.transition(.move(edge: .leading))
                 
