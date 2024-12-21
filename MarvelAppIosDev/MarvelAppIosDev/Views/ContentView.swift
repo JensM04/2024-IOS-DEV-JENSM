@@ -5,6 +5,8 @@ import FirebaseAuth
 struct ContentView: View {
     @State private var email = ""
     @State private var password = ""
+    @State private var isPasswordVisible = false
+    
     var body: some View {
         ZStack{
             Color.white
@@ -45,14 +47,36 @@ struct ContentView: View {
                 Rectangle().frame(width: 350, height: 1)
                     .foregroundColor(.black)
                 
-                
-                SecureField("Password", text: $password)
-                    .foregroundColor(.black)
-                    .textFieldStyle(.plain)
-                    .placeholder(when: password.isEmpty){
-                        Text("Password").foregroundColor(.white)
-                            .bold()
+                ZStack {
+                    if isPasswordVisible {
+                        TextField("Password", text: $password)
+                            .foregroundColor(.black)
+                            .textFieldStyle(.plain)
+                            .placeholder(when: password.isEmpty) {
+                                Text("Password").foregroundColor(.white)
+                                    .bold()
+                            }
+                    } else {
+                        SecureField("Password", text: $password)
+                            .foregroundColor(.black)
+                            .textFieldStyle(.plain)
+                            .placeholder(when: password.isEmpty) {
+                                Text("Password").foregroundColor(.white)
+                                    .bold()
+                            }
                     }
+                    
+                    HStack {
+                        Spacer()
+                        Button(action: {
+                            isPasswordVisible.toggle()
+                        }) {
+                            Image(systemName: isPasswordVisible ? "eye.slash" : "eye")
+                                .foregroundColor(.gray)
+                        }
+                    }
+                    .padding(.trailing, 10)
+                }
                 
                 Rectangle().frame(width: 350, height: 1)
                     .foregroundColor(.black)
@@ -76,7 +100,7 @@ struct ContentView: View {
                     } label: {
                         Text("Log in")
                             .bold()
-                            .frame(width: 150, height: 40) // Adjust width to fit better
+                            .frame(width: 150, height: 40)
                             .background(
                                 RoundedRectangle(cornerRadius: 10, style: .continuous)
                                     .fill(.linearGradient(colors: [.pink, .red], startPoint: .top, endPoint: .bottomTrailing))
