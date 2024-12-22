@@ -10,6 +10,8 @@ import Foundation
 class MarvelViewModel: ObservableObject {
     @Published var character: Character?
     @Published var characters: [Character] = []
+    
+    @Published var isLoading: Bool = false
 
     func fetchCharacter(characterId: Int) {
         guard let url = createMarvelRequestURL(characterId: characterId) else { return }
@@ -30,9 +32,14 @@ class MarvelViewModel: ObservableObject {
     }
 
     func fetchAllCharacters() {
+        isLoading = true
         guard let url = createMarvelRequestURLForAllCharacters() else { return }
 
         let task = URLSession.shared.dataTask(with: url) { data, response, error in
+            DispatchQueue.main.async {
+                self.isLoading = false
+            }
+
             if let data = data {
                 do {
                     let decodedData = try JSONDecoder().decode(CharacterDataWrapper.self, from: data)

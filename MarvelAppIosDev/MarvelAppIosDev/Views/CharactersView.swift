@@ -14,28 +14,36 @@ struct CharactersView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                TabView(selection: $selectedTab) {
-                    ScrollView {
-                        LazyVGrid(columns: [GridItem(.adaptive(minimum: 150))], spacing: 16) {
-                            ForEach(viewModel.characters, id: \.id) { character in
-                                CharacterCardView(
-                                    name: character.name ?? "Unknown Character",
-                                    imageUrl: character.thumbnail?.fullPath
-                                )
+                if viewModel.isLoading {
+                    ProgressView("Loading Characters...")
+                        .progressViewStyle(CircularProgressViewStyle())
+                        .scaleEffect(1.5)
+                } else {
+                    TabView(selection: $selectedTab) {
+                        ScrollView {
+                            LazyVGrid(columns: [GridItem(.adaptive(minimum: 150))], spacing: 16) {
+                                ForEach(viewModel.characters, id: \.id) { character in
+                                    CharacterCardView(
+                                        name: character.name ?? "Unknown Character",
+                                        imageUrl: character.thumbnail?.fullPath
+                                    )
+                                }
+                            }
+                            .padding()
+                        }
+                        .onAppear {
+                            if viewModel.characters.isEmpty {
+                                viewModel.fetchAllCharacters()
                             }
                         }
-                        .padding()
+                        .tag(0)
+                        
+                        Text("Comics").tag(1)
+                        
+                        Text("Events").tag(2)
+                        
+                        Text("Series").tag(3)
                     }
-                    .onAppear {
-                        viewModel.fetchAllCharacters()
-                    }
-                    .tag(0)
-                    
-                    Text("Comics").tag(1)
-                    
-                    Text("Events").tag(2)
-                    
-                    Text("Series").tag(3)
                 }
                 
                 SideMenuView(isShowing: $showMenu, selectedTab: $selectedTab)
