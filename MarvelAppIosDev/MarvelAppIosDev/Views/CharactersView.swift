@@ -10,54 +10,43 @@ struct CharactersView: View {
     @StateObject private var viewModel = MarvelViewModel()
     @State private var showMenu = false
     @State private var selectedTab = 0
-    
+
     var body: some View {
         NavigationStack {
             ZStack {
-                TabView(selection: $selectedTab) {
-                    VStack {
-                                        if let character = viewModel.character {
-                                            Text(character.name ?? "Unknown Character")
-                                                .font(.largeTitle)
-                                                .padding()
-                                            
-                                            if let description = character.description, !description.isEmpty {
-                                                Text(description)
-                                                    .font(.body)
-                                                    .padding()
-                                            } else {
-                                                Text("No description available")
-                                                    .font(.body)
-                                                    .padding()
-                                            }
-                                            
-                                            if let imageUrl = character.thumbnail?.fullPath, let url = URL(string: imageUrl) {
-                                                AsyncImage(url: url) { image in
-                                                    image
-                                                        .resizable()
-                                                        .scaledToFit()
-                                                        .frame(width: 200, height: 200)
-                                                } placeholder: {
-                                                    ProgressView()
-                                                }
-                                            } else {
-                                                Text("No image available")
-                                                    .font(.caption)
-                                            }
-                                        } else {
-                                            Text("Loading character...")
-                                                .onAppear {
-                                                    viewModel.fetchCharacter(characterId: 1009610)
-                                                }
-                                        }
+                if viewModel.isLoading {
+                    ProgressView("Loading Characters...")
+                        .progressViewStyle(CircularProgressViewStyle())
+                        .scaleEffect(1.5)
+                } else {
+                    TabView(selection: $selectedTab) {
+                        GeometryReader { geometry in
+                            ScrollView {
+                                let columns = adaptiveColumns(for: geometry.size.width)
+                                LazyVGrid(columns: columns, spacing: 16) {
+                                    ForEach(viewModel.characters, id: \.id) { character in
+                                        CharacterCardView(
+                                            name: character.name ?? "Unknown Character",
+                                            imageUrl: character.thumbnail?.fullPath
+                                        )
                                     }
-                                    .tag(0)
-                    
-                    Text("Comics").tag(1)
-                    
-                    Text("Events").tag(2)
-                    
-                    Text("Series").tag(3)
+                                }
+                                .padding()
+                            }
+                            .onAppear {
+                                if viewModel.characters.isEmpty {
+                                    viewModel.fetchAllCharacters()
+                                }
+                            }
+                        }
+                        .tag(0)
+                        
+                        Text("Comics").tag(1)
+                        
+                        Text("Events").tag(2)
+                        
+                        Text("Series").tag(3)
+                    }
                 }
                 
                 SideMenuView(isShowing: $showMenu, selectedTab: $selectedTab)
@@ -75,9 +64,14 @@ struct CharactersView: View {
             }
         }
     }
+    private func adaptiveColumns(for width: CGFloat) -> [GridItem] {
+        let minCardWidth: CGFloat = 150
+        let spacing: CGFloat = 16
+        let columnsCount = max(Int((width - spacing) / (minCardWidth + spacing)), 1)
+        return Array(repeating: GridItem(.flexible(), spacing: spacing), count: columnsCount)
+    }
 }
 
 #Preview {
     CharactersView()
 }
-
