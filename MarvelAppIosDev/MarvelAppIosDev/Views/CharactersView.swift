@@ -20,20 +20,23 @@ struct CharactersView: View {
                         .scaleEffect(1.5)
                 } else {
                     TabView(selection: $selectedTab) {
-                        ScrollView {
-                            LazyVGrid(columns: [GridItem(.adaptive(minimum: 150))], spacing: 16) {
-                                ForEach(viewModel.characters, id: \.id) { character in
-                                    CharacterCardView(
-                                        name: character.name ?? "Unknown Character",
-                                        imageUrl: character.thumbnail?.fullPath
-                                    )
+                        GeometryReader { geometry in
+                            ScrollView {
+                                let columns = adaptiveColumns(for: geometry.size.width)
+                                LazyVGrid(columns: columns, spacing: 16) {
+                                    ForEach(viewModel.characters, id: \.id) { character in
+                                        CharacterCardView(
+                                            name: character.name ?? "Unknown Character",
+                                            imageUrl: character.thumbnail?.fullPath
+                                        )
+                                    }
                                 }
+                                .padding()
                             }
-                            .padding()
-                        }
-                        .onAppear {
-                            if viewModel.characters.isEmpty {
-                                viewModel.fetchAllCharacters()
+                            .onAppear {
+                                if viewModel.characters.isEmpty {
+                                    viewModel.fetchAllCharacters()
+                                }
                             }
                         }
                         .tag(0)
@@ -61,9 +64,14 @@ struct CharactersView: View {
             }
         }
     }
+    private func adaptiveColumns(for width: CGFloat) -> [GridItem] {
+        let minCardWidth: CGFloat = 150
+        let spacing: CGFloat = 16
+        let columnsCount = max(Int((width - spacing) / (minCardWidth + spacing)), 1)
+        return Array(repeating: GridItem(.flexible(), spacing: spacing), count: columnsCount)
+    }
 }
 
 #Preview {
     CharactersView()
 }
-

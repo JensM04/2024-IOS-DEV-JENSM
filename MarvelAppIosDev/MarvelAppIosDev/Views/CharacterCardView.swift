@@ -14,28 +14,32 @@ struct CharacterCardView: View {
     var body: some View {
         VStack {
             ZStack {
-                Rectangle()
-                    .fill(Color.gray.opacity(0.1))
-                    .frame(width: 150, height: 150)
-                    .cornerRadius(8)
-
-                if let url = imageUrl, let validUrl = URL(string: url) {
-                    AsyncImage(url: validUrl) { image in
-                        image
+                GeometryReader { geometry in
+                    let size = min(geometry.size.width, geometry.size.height)
+                    
+                    Rectangle()
+                        .fill(Color.gray.opacity(0.1))
+                        .cornerRadius(8)
+                    
+                    if let url = imageUrl, let validUrl = URL(string: url) {
+                        AsyncImage(url: validUrl) { image in
+                            image
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: size, height: size)
+                                .cornerRadius(8)
+                        } placeholder: {
+                            ProgressView()
+                        }
+                    } else {
+                        Image(systemName: "person.crop.circle.fill.badge.xmark")
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 150, height: 150)
-                            .cornerRadius(8)
-                    } placeholder: {
-                        ProgressView()
+                            .frame(width: size * 0.5, height: size * 0.5)
+                            .foregroundColor(.gray)
                     }
-                } else {
-                    Image(systemName: "person.crop.circle.fill.badge.xmark")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 50, height: 50) 
-                        .foregroundColor(.gray)
                 }
+                .aspectRatio(1, contentMode: .fit)
             }
 
             Text(name.isEmpty ? "Unknown Character" : name)
