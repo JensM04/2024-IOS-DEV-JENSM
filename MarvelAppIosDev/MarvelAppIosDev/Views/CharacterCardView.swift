@@ -54,3 +54,10 @@ struct CharacterCardView: View {
     }
 }
 
+#Preview {
+    CharacterCardView(
+        name: "3-D Man",
+        imageUrl: "http://i.annihil.us/u/prod/marvel/i/mg/c/e0/535fecbbb9784"
+    )
+}
+
