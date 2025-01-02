@@ -25,10 +25,12 @@ struct CharactersView: View {
                                 let columns = adaptiveColumns(for: geometry.size.width)
                                 LazyVGrid(columns: columns, spacing: 16) {
                                     ForEach(viewModel.characters, id: \.id) { character in
-                                        CharacterCardView(
-                                            name: character.name ?? "Unknown Character",
-                                            imageUrl: character.thumbnail?.fullPath
-                                        )
+                                        NavigationLink(destination: CharacterDetailView(characterName: character.name ?? "Unknown Character")) {
+                                            CharacterCardView(
+                                                name: character.name ?? "Unknown Character",
+                                                imageUrl: character.thumbnail?.fullPath
+                                            ).foregroundColor(.primary)
+                                        }.buttonStyle(.plain)
                                     }
                                 }
                                 .padding()
@@ -71,6 +73,7 @@ struct CharactersView: View {
         return Array(repeating: GridItem(.flexible(), spacing: spacing), count: columnsCount)
     }
 }
+
 
 #Preview {
     CharactersView()
