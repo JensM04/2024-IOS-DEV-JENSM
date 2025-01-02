@@ -27,13 +27,14 @@ func createMarvelRequestURL(characterId: Int) -> URL? {
 }
 
 //alle characters
-func createMarvelRequestURLForAllCharacters() -> URL? {
+func createMarvelRequestURLForAllCharacters(page: Int, limit: Int) -> URL? {
     let publicKey = "8ab5735c14907aa64e86a2ce365f2d2a"
     let privateKey = "37f5290edf7d0d00a744fa7a3217f365c8b75a96"
     let timestamp = "\(Int(Date().timeIntervalSince1970))"
     let hash = generateMarvelHash(timestamp: timestamp, privateKey: privateKey, publicKey: publicKey)
     
-    let urlString = "https://gateway.marvel.com/v1/public/characters?ts=\(timestamp)&apikey=\(publicKey)&hash=\(hash)"
+    let offset = (page - 1) * limit 
+    let urlString = "https://gateway.marvel.com/v1/public/characters?ts=\(timestamp)&apikey=\(publicKey)&hash=\(hash)&limit=\(limit)&offset=\(offset)"
     return URL(string: urlString)
 }
 

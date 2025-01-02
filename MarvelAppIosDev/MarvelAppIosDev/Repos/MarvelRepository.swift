@@ -8,6 +8,7 @@
 import Foundation
 
 class MarvelRepository: MarvelRepositoryProtocol {
+    
     func fetchCharacter(characterId: Int, completion: @escaping (Result<Character, Error>) -> Void) {
         guard let url = createMarvelRequestURL(characterId: characterId) else {
             completion(.failure(NSError(domain: "Invalid URL", code: 400, userInfo: nil)))
@@ -38,8 +39,8 @@ class MarvelRepository: MarvelRepositoryProtocol {
         }.resume()
     }
 
-    func fetchAllCharacters(completion: @escaping (Result<[Character], Error>) -> Void) {
-        guard let url = createMarvelRequestURLForAllCharacters() else {
+    func fetchAllCharacters(page: Int, limit: Int, completion: @escaping (Result<[Character], Error>) -> Void) {
+        guard let url = createMarvelRequestURLForAllCharacters(page: page, limit: limit) else {
             completion(.failure(NSError(domain: "Invalid URL", code: 400, userInfo: nil)))
             return
         }

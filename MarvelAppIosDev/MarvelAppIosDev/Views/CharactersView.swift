@@ -60,14 +60,50 @@ struct CharactersView: View {
                     }
                 }
                 .padding()
+
+                HStack {
+                    Spacer()
+                    
+                    Button(action: {
+                        if viewModel.currentPage > 1 {
+                            viewModel.currentPage -= 1
+                            viewModel.fetchAllCharacters(page: viewModel.currentPage)
+                        }
+                    }) {
+                        Image(systemName: "chevron.left.circle.fill")
+                            .resizable()
+                            .frame(width: 44, height: 44)
+                            .foregroundColor(viewModel.currentPage > 1 ? .red : .gray)
+                    }
+                    .disabled(viewModel.currentPage <= 1)
+                    
+                    Spacer()
+
+                    Button(action: {
+                        if viewModel.currentPage < viewModel.totalPages {
+                            viewModel.currentPage += 1
+                            viewModel.fetchAllCharacters(page: viewModel.currentPage)
+                        }
+                    }) {
+                        Image(systemName: "chevron.right.circle.fill")
+                            .resizable()
+                            .frame(width: 44, height: 44)
+                            .foregroundColor(viewModel.currentPage < viewModel.totalPages ? .red : .gray)
+                    }
+                    .disabled(viewModel.currentPage >= viewModel.totalPages)
+                    
+                    Spacer()
+                }
+                .padding(.top)
             }
             .onAppear {
                 if viewModel.characters.isEmpty {
-                    viewModel.fetchAllCharacters()
+                    viewModel.fetchAllCharacters(page: viewModel.currentPage)
                 }
             }
         }
     }
+
 
     private func characterCard(for character: Character) -> some View {
         CharacterCardView(
