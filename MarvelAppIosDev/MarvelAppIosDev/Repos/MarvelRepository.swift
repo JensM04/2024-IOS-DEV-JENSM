@@ -27,7 +27,7 @@ class MarvelRepository: MarvelRepositoryProtocol {
 
             do {
                 let decodedData = try JSONDecoder().decode(CharacterDataWrapper.self, from: data)
-                if let character = decodedData.data?.results.first {
+                if let results = decodedData.data?.results, let character = results.first {
                     completion(.success(character))
                 } else {
                     completion(.failure(NSError(domain: "No character found", code: 404, userInfo: nil)))

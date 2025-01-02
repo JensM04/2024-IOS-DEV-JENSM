@@ -20,33 +20,11 @@ struct CharactersView: View {
                         .scaleEffect(1.5)
                 } else {
                     TabView(selection: $selectedTab) {
-                        GeometryReader { geometry in
-                            ScrollView {
-                                let columns = adaptiveColumns(for: geometry.size.width)
-                                LazyVGrid(columns: columns, spacing: 16) {
-                                    ForEach(viewModel.characters, id: \.id) { character in
-                                        NavigationLink(destination: CharacterDetailView(characterName: character.name ?? "Unknown Character")) {
-                                            CharacterCardView(
-                                                name: character.name ?? "Unknown Character",
-                                                imageUrl: character.thumbnail?.fullPath
-                                            ).foregroundColor(.primary)
-                                        }.buttonStyle(.plain)
-                                    }
-                                }
-                                .padding()
-                            }
-                            .onAppear {
-                                if viewModel.characters.isEmpty {
-                                    viewModel.fetchAllCharacters()
-                                }
-                            }
-                        }
-                        .tag(0)
+                        characterGridView
+                            .tag(0)
                         
                         Text("Comics").tag(1)
-                        
                         Text("Events").tag(2)
-                        
                         Text("Series").tag(3)
                     }
                 }
@@ -66,6 +44,39 @@ struct CharactersView: View {
             }
         }
     }
+
+    private var characterGridView: some View {
+        GeometryReader { geometry in
+            ScrollView {
+                let columns = adaptiveColumns(for: geometry.size.width)
+                LazyVGrid(columns: columns, spacing: 16) {
+                    ForEach(viewModel.characters, id: \.id) { character in
+                        NavigationLink(
+                            destination: CharacterDetailView(character: character)
+                        ) {
+                            characterCard(for: character)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding()
+            }
+            .onAppear {
+                if viewModel.characters.isEmpty {
+                    viewModel.fetchAllCharacters()
+                }
+            }
+        }
+    }
+
+    private func characterCard(for character: Character) -> some View {
+        CharacterCardView(
+            name: character.name ?? "Unknown Character",
+            imageUrl: character.thumbnail?.fullPath
+        )
+        .foregroundColor(.primary)
+    }
+
     private func adaptiveColumns(for width: CGFloat) -> [GridItem] {
         let minCardWidth: CGFloat = 150
         let spacing: CGFloat = 16
@@ -73,7 +84,6 @@ struct CharactersView: View {
         return Array(repeating: GridItem(.flexible(), spacing: spacing), count: columnsCount)
     }
 }
-
 
 #Preview {
     CharactersView()
