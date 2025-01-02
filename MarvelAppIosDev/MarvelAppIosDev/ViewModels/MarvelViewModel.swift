@@ -10,47 +10,39 @@ import Foundation
 class MarvelViewModel: ObservableObject {
     @Published var character: Character?
     @Published var characters: [Character] = []
-    
     @Published var isLoading: Bool = false
+    
+    private let repository: MarvelRepositoryProtocol
+    
+    init(repository: MarvelRepositoryProtocol = MarvelRepository()) {
+        self.repository = repository
+    }
 
     func fetchCharacter(characterId: Int) {
-        guard let url = createMarvelRequestURL(characterId: characterId) else { return }
-        
-        let task = URLSession.shared.dataTask(with: url) { data, response, error in
-            if let data = data {
-                do {
-                    let decodedData = try JSONDecoder().decode(CharacterDataWrapper.self, from: data)
-                    DispatchQueue.main.async {
-                        self.character = decodedData.data?.results.first
-                    }
-                } catch {
-                    print("Error decoding: \(error)")
+        repository.fetchCharacter(characterId: characterId) { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let character):
+                    self?.character = character
+                case .failure(let error):
+                    print("Error fetching character: \(error)")
                 }
             }
         }
-        task.resume()
     }
 
     func fetchAllCharacters() {
         isLoading = true
-        guard let url = createMarvelRequestURLForAllCharacters() else { return }
-
-        let task = URLSession.shared.dataTask(with: url) { data, response, error in
+        repository.fetchAllCharacters { [weak self] result in
             DispatchQueue.main.async {
-                self.isLoading = false
-            }
-
-            if let data = data {
-                do {
-                    let decodedData = try JSONDecoder().decode(CharacterDataWrapper.self, from: data)
-                    DispatchQueue.main.async {
-                        self.characters = decodedData.data?.results ?? []
-                    }
-                } catch {
-                    print("Error decoding: \(error)")
+                self?.isLoading = false
+                switch result {
+                case .success(let characters):
+                    self?.characters = characters
+                case .failure(let error):
+                    print("Error fetching characters: \(error)")
                 }
             }
         }
-        task.resume()
     }
 }
