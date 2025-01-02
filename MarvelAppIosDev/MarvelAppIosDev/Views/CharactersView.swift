@@ -61,9 +61,24 @@ struct CharactersView: View {
                 }
                 .padding()
 
+                //paginatie
                 HStack {
                     Spacer()
-                    
+
+                    //back to eerste pagina
+                    Button(action: {
+                        viewModel.currentPage = 1
+                        viewModel.fetchAllCharacters(page: viewModel.currentPage)
+                    }) {
+                        Text("First")
+                            .padding()
+                            .background(viewModel.currentPage > 1 ? Color.red : Color.gray)
+                            .cornerRadius(8)
+                            .foregroundColor(.white)
+                    }
+                    .disabled(viewModel.currentPage <= 1)
+
+                    //vorige pagina
                     Button(action: {
                         if viewModel.currentPage > 1 {
                             viewModel.currentPage -= 1
@@ -76,9 +91,11 @@ struct CharactersView: View {
                             .foregroundColor(viewModel.currentPage > 1 ? .red : .gray)
                     }
                     .disabled(viewModel.currentPage <= 1)
-                    
-                    Spacer()
 
+                    Text("\(viewModel.currentPage) of \(viewModel.totalPages)")
+                        .padding(.horizontal)
+
+                    //volgende pagina
                     Button(action: {
                         if viewModel.currentPage < viewModel.totalPages {
                             viewModel.currentPage += 1
@@ -91,7 +108,20 @@ struct CharactersView: View {
                             .foregroundColor(viewModel.currentPage < viewModel.totalPages ? .red : .gray)
                     }
                     .disabled(viewModel.currentPage >= viewModel.totalPages)
-                    
+
+                    //laatste pagina
+                    Button(action: {
+                                        viewModel.currentPage = viewModel.totalPages
+                                        viewModel.fetchAllCharacters(page: viewModel.currentPage)
+                                    }) {
+                                        Text("Last")
+                                            .padding()
+                                            .background(viewModel.currentPage < viewModel.totalPages ? Color.red : Color.gray)
+                                            .cornerRadius(8)
+                                            .foregroundColor(.white)
+                                    }
+                                    .disabled(viewModel.currentPage >= viewModel.totalPages)
+
                     Spacer()
                 }
                 .padding(.top)
@@ -103,6 +133,7 @@ struct CharactersView: View {
             }
         }
     }
+
 
 
     private func characterCard(for character: Character) -> some View {

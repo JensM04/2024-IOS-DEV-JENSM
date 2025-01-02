@@ -12,7 +12,7 @@ class MarvelViewModel: ObservableObject {
     @Published var characters: [Character] = []
     @Published var isLoading: Bool = false
     @Published var currentPage: Int = 1
-    @Published var totalPages: Int = 100 // weet niet hoeveel characters in db zitten, dus ik neem er 2000
+    @Published var totalPages: Int = 75 
     private let charactersPerPage = 20
     private let repository: MarvelRepositoryProtocol
 
