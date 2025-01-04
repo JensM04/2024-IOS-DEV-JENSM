@@ -9,6 +9,7 @@ import Foundation
 
 class MarvelRepository: MarvelRepositoryProtocol {
     
+    //
     func fetchCharacter(characterId: Int, completion: @escaping (Result<Character, Error>) -> Void) {
         guard let url = createMarvelRequestURL(characterId: characterId) else {
             completion(.failure(NSError(domain: "Invalid URL", code: 400, userInfo: nil)))
@@ -58,6 +59,32 @@ class MarvelRepository: MarvelRepositoryProtocol {
 
             do {
                 let decodedData = try JSONDecoder().decode(CharacterDataWrapper.self, from: data)
+                completion(.success(decodedData.data?.results ?? []))
+            } catch {
+                completion(.failure(error))
+            }
+        }.resume()
+    }
+    
+    func fetchComics(characterId: Int, completion: @escaping (Result<[Comic], Error>) -> Void) {
+        guard let url = createMarvelRequestURLForComics(characterId: characterId) else {
+            completion(.failure(NSError(domain: "Invalid URL", code: 400, userInfo: nil)))
+            return
+        }
+        
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+            
+            guard let data = data else {
+                completion(.failure(NSError(domain: "No data", code: 404, userInfo: nil)))
+                return
+            }
+            
+            do {
+                let decodedData = try JSONDecoder().decode(ComicDataWrapper.self, from: data)
                 completion(.success(decodedData.data?.results ?? []))
             } catch {
                 completion(.failure(error))

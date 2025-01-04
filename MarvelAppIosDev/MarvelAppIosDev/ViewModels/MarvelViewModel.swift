@@ -10,6 +10,7 @@ import Foundation
 class MarvelViewModel: ObservableObject {
     @Published var character: Character?
     @Published var characters: [Character] = []
+    @Published var comics: [Comic] = []
     @Published var isLoading: Bool = false
     @Published var currentPage: Int = 1
     @Published var totalPages: Int = 75 
@@ -43,6 +44,21 @@ class MarvelViewModel: ObservableObject {
                     self?.characters = characters
                 case .failure(let error):
                     print("Error fetching characters: \(error)")
+                }
+            }
+        }
+    }
+    
+    func fetchComics(characterId: Int) {
+        isLoading = true
+        repository.fetchComics(characterId: characterId) { [weak self] result in
+            DispatchQueue.main.async {
+                self?.isLoading = false
+                switch result {
+                case .success(let comics):
+                    self?.comics = comics
+                case .failure(let error):
+                    print("Error fetching comics: \(error)")
                 }
             }
         }

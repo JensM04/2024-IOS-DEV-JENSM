@@ -15,9 +15,11 @@ struct CharactersView: View {
         NavigationStack {
             ZStack {
                 if viewModel.isLoading {
-                    ProgressView("Loading Characters...")
-                        .progressViewStyle(CircularProgressViewStyle())
-                        .scaleEffect(1.5)
+                    VStack {
+                        ProgressView("Loading characters...")
+                            .progressViewStyle(CircularProgressViewStyle(tint: .red))
+                            .padding()
+                    }
                 } else {
                     TabView(selection: $selectedTab) {
                         characterGridView
@@ -52,7 +54,7 @@ struct CharactersView: View {
                 LazyVGrid(columns: columns, spacing: 16) {
                     ForEach(viewModel.characters, id: \.id) { character in
                         NavigationLink(
-                            destination: CharacterDetailView(character: character)
+                            destination: CharacterDetailView(character: character, viewModel: viewModel)
                         ) {
                             characterCard(for: character)
                         }
