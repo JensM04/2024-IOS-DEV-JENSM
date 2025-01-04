@@ -42,13 +42,11 @@ struct ComicListView: View {
 struct LoadingView: View {
     var body: some View {
         VStack(spacing: 20) {
-            ProgressView()
-                .progressViewStyle(CircularProgressViewStyle(tint: .red))
-                .scaleEffect(1.5)
-            
-            Text("Loading comics...")
-                .font(.headline)
-                .foregroundColor(.gray)
+            VStack {
+                ProgressView("Loading comics...")
+                    .progressViewStyle(CircularProgressViewStyle(tint: .red))
+                    .padding()
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }

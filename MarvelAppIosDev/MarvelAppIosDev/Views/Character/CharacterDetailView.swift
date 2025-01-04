@@ -90,7 +90,12 @@ struct CharacterDetailView: View {
                         }
                         
                         NavigationButton(title: "Events", icon: "star.fill") {
-                            Text("Events Page")
+                            EventListView(viewModel: viewModel)
+                                .onAppear {
+                                    if let characterId = character.id {
+                                        viewModel.fetchEvents(characterId: characterId)
+                                    }
+                                }
                         }
                         
                         NavigationButton(title: "Series", icon: "rectangle.stack.fill") {

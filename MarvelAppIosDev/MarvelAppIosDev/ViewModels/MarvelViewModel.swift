@@ -11,6 +11,7 @@ class MarvelViewModel: ObservableObject {
     @Published var character: Character?
     @Published var characters: [Character] = []
     @Published var comics: [Comic] = []
+    @Published var events: [Event] = []
     @Published var isLoading: Bool = false
     @Published var currentPage: Int = 1
     @Published var totalPages: Int = 75 
@@ -63,4 +64,19 @@ class MarvelViewModel: ObservableObject {
             }
         }
     }
-}
+    
+    func fetchEvents(characterId: Int) {
+            isLoading = true
+            repository.fetchEvents(characterId: characterId) { [weak self] result in
+                DispatchQueue.main.async {
+                    self?.isLoading = false
+                    switch result {
+                    case .success(let events):
+                        self?.events = events
+                    case .failure(let error):
+                        print("Error fetching events: \(error)")
+                    }
+                }
+            }
+        }
+    }

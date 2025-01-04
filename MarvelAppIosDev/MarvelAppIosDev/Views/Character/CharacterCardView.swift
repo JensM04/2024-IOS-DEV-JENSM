@@ -29,7 +29,15 @@ struct CharacterCardView: View {
                                 .frame(width: size, height: size)
                                 .cornerRadius(8)
                         } placeholder: {
-                            ProgressView()
+                            ZStack {
+                                Color.gray.opacity(0.1)
+                                    .cornerRadius(8)
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle(tint: .red))
+                                    .scaleEffect(1.5)
+                                    .foregroundColor(.red)
+                            }
+                            .frame(width: size, height: size)
                         }
                     } else {
                         Image(systemName: "person.crop.circle.fill.badge.xmark")
@@ -60,4 +68,3 @@ struct CharacterCardView: View {
         imageUrl: "http://i.annihil.us/u/prod/marvel/i/mg/c/e0/535fecbbb9784"
     )
 }
-
