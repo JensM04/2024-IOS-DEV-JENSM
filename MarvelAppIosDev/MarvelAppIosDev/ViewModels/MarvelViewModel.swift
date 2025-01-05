@@ -12,10 +12,14 @@ class MarvelViewModel: ObservableObject {
     @Published var characters: [Character] = []
     @Published var comics: [Comic] = []
     @Published var events: [Event] = []
+    @Published var series: [SeriesItem] = []
     @Published var isLoading: Bool = false
-    @Published var currentPage: Int = 1
-    @Published var totalPages: Int = 75 
+    @Published var currentCharacterPage: Int = 1
+    @Published var totalCharacterPages: Int = 75
+    @Published var currentComicsPage: Int = 1
     private let charactersPerPage = 20
+    @Published var comicsTotalPages: Int = 20
+    private let comicsPerPage = 20
     private let repository: MarvelRepositoryProtocol
 
     init(repository: MarvelRepositoryProtocol = MarvelRepository()) {
@@ -50,6 +54,21 @@ class MarvelViewModel: ObservableObject {
         }
     }
     
+    func fetchAllComics(page: Int) {
+        isLoading = true
+        repository.fetchAllComics(page: page, limit: comicsPerPage) { [weak self] result in
+            DispatchQueue.main.async {
+                self?.isLoading = false
+                switch result {
+                case .success(let comics):
+                    self?.comics = comics
+                case .failure(let error):
+                    print("Error fetching comics: \(error)")
+                }
+            }
+        }
+    }
+    
     func fetchComics(characterId: Int) {
         isLoading = true
         repository.fetchComics(characterId: characterId) { [weak self] result in
@@ -79,4 +98,19 @@ class MarvelViewModel: ObservableObject {
                 }
             }
         }
+    
+    func fetchSeries(characterId: Int) {
+        isLoading = true
+        MarvelRepository().fetchSeries(characterId: characterId) { [weak self] result in
+            DispatchQueue.main.async {
+                self?.isLoading = false
+                switch result {
+                case .success(let series):
+                    self?.series = series.flatMap { $0.items ?? [] }
+                case .failure:
+                    self?.series = []
+                }
+            }
+        }
     }
+}

@@ -83,7 +83,7 @@ struct CharacterDetailView: View {
                         GridItem(.flexible())
                     ], spacing: 12) {
                         NavigationButton(title: "Comics", icon: "book.fill") {
-                            ComicListView(viewModel: viewModel)
+                            ComicListView(viewModel: viewModel, isForAllComics: false)
                                 .onAppear {
                                     viewModel.fetchComics(characterId: character.id ?? 0)
                                 }
@@ -92,14 +92,15 @@ struct CharacterDetailView: View {
                         NavigationButton(title: "Events", icon: "star.fill") {
                             EventListView(viewModel: viewModel)
                                 .onAppear {
-                                    if let characterId = character.id {
-                                        viewModel.fetchEvents(characterId: characterId)
-                                    }
+                                        viewModel.fetchEvents(characterId: character.id ?? 0)
                                 }
                         }
                         
                         NavigationButton(title: "Series", icon: "rectangle.stack.fill") {
-                            Text("Series Page")
+                            SeriesListView(viewModel: viewModel, characterId: character.id ?? 0)
+                                .onAppear {
+                                        viewModel.fetchEvents(characterId: character.id ?? 0)
+                                }
                         }
                     }
                 }

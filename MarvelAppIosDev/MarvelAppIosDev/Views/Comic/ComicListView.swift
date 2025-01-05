@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ComicListView: View {
     @ObservedObject var viewModel: MarvelViewModel
-    @Environment(\.presentationMode) var presentationMode
+    var isForAllComics: Bool
     
     var body: some View {
         ZStack {
@@ -34,10 +34,18 @@ struct ComicListView: View {
                 }
             }
         }
-        .navigationTitle("Comics")
+        .onAppear {
+            if isForAllComics {
+                viewModel.fetchAllComics(page: viewModel.currentComicsPage)
+            } else if let characterId = viewModel.character?.id {
+                viewModel.fetchComics(characterId: characterId)
+            }
+        }
+        .navigationTitle(isForAllComics ? "All Comics" : "Comics")
         .navigationBarTitleDisplayMode(.large)
     }
 }
+
 
 struct LoadingView: View {
     var body: some View {

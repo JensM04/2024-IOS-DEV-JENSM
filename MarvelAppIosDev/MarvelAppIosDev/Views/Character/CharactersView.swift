@@ -25,7 +25,9 @@ struct CharactersView: View {
                         characterGridView
                             .tag(0)
                         
-                        Text("Comics").tag(1)
+                        ComicListView(viewModel: viewModel, isForAllComics: true)
+                              .tag(1)
+                        
                         Text("Events").tag(2)
                         Text("Series").tag(3)
                     }
@@ -69,60 +71,60 @@ struct CharactersView: View {
 
                     //back to eerste pagina
                     Button(action: {
-                        viewModel.currentPage = 1
-                        viewModel.fetchAllCharacters(page: viewModel.currentPage)
+                        viewModel.currentCharacterPage = 1
+                        viewModel.fetchAllCharacters(page: viewModel.currentCharacterPage)
                     }) {
                         Text("First")
                             .padding()
-                            .background(viewModel.currentPage > 1 ? Color.red : Color.gray)
+                            .background(viewModel.currentCharacterPage > 1 ? Color.red : Color.gray)
                             .cornerRadius(8)
                             .foregroundColor(.white)
                     }
-                    .disabled(viewModel.currentPage <= 1)
+                    .disabled(viewModel.currentCharacterPage <= 1)
 
                     //vorige pagina
                     Button(action: {
-                        if viewModel.currentPage > 1 {
-                            viewModel.currentPage -= 1
-                            viewModel.fetchAllCharacters(page: viewModel.currentPage)
+                        if viewModel.currentCharacterPage > 1 {
+                            viewModel.currentCharacterPage -= 1
+                            viewModel.fetchAllCharacters(page: viewModel.currentCharacterPage)
                         }
                     }) {
                         Image(systemName: "chevron.left.circle.fill")
                             .resizable()
                             .frame(width: 44, height: 44)
-                            .foregroundColor(viewModel.currentPage > 1 ? .red : .gray)
+                            .foregroundColor(viewModel.currentCharacterPage > 1 ? .red : .gray)
                     }
-                    .disabled(viewModel.currentPage <= 1)
+                    .disabled(viewModel.currentCharacterPage <= 1)
 
-                    Text("\(viewModel.currentPage) of \(viewModel.totalPages)")
+                    Text("\(viewModel.currentCharacterPage) of \(viewModel.totalCharacterPages)")
                         .padding(.horizontal)
 
                     //volgende pagina
                     Button(action: {
-                        if viewModel.currentPage < viewModel.totalPages {
-                            viewModel.currentPage += 1
-                            viewModel.fetchAllCharacters(page: viewModel.currentPage)
+                        if viewModel.currentCharacterPage < viewModel.totalCharacterPages {
+                            viewModel.currentCharacterPage += 1
+                            viewModel.fetchAllCharacters(page: viewModel.currentCharacterPage)
                         }
                     }) {
                         Image(systemName: "chevron.right.circle.fill")
                             .resizable()
                             .frame(width: 44, height: 44)
-                            .foregroundColor(viewModel.currentPage < viewModel.totalPages ? .red : .gray)
+                            .foregroundColor(viewModel.currentCharacterPage < viewModel.totalCharacterPages ? .red : .gray)
                     }
-                    .disabled(viewModel.currentPage >= viewModel.totalPages)
+                    .disabled(viewModel.currentCharacterPage >= viewModel.totalCharacterPages)
 
                     //laatste pagina
                     Button(action: {
-                                        viewModel.currentPage = viewModel.totalPages
-                                        viewModel.fetchAllCharacters(page: viewModel.currentPage)
+                                        viewModel.currentCharacterPage = viewModel.totalCharacterPages
+                                        viewModel.fetchAllCharacters(page: viewModel.currentCharacterPage)
                                     }) {
                                         Text("Last")
                                             .padding()
-                                            .background(viewModel.currentPage < viewModel.totalPages ? Color.red : Color.gray)
+                                            .background(viewModel.currentCharacterPage < viewModel.totalCharacterPages ? Color.red : Color.gray)
                                             .cornerRadius(8)
                                             .foregroundColor(.white)
                                     }
-                                    .disabled(viewModel.currentPage >= viewModel.totalPages)
+                                    .disabled(viewModel.currentCharacterPage >= viewModel.totalCharacterPages)
 
                     Spacer()
                 }
@@ -130,7 +132,7 @@ struct CharactersView: View {
             }
             .onAppear {
                 if viewModel.characters.isEmpty {
-                    viewModel.fetchAllCharacters(page: viewModel.currentPage)
+                    viewModel.fetchAllCharacters(page: viewModel.currentCharacterPage)
                 }
             }
         }
