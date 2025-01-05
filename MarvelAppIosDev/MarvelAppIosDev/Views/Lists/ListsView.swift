@@ -62,6 +62,7 @@ struct ListsView: View {
                 }
             }
         }
+        .navigationViewStyle(StackNavigationViewStyle())
     }
 
     private func createList() {
@@ -91,7 +92,7 @@ struct ListSelectionSheet: View {
     }
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             List {
                 ForEach(lists) { list in
                     Button(action: {

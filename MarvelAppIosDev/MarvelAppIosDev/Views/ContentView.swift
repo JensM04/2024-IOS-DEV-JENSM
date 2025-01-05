@@ -15,13 +15,13 @@ struct ContentView: View {
     
     //als gebruiker ingelogd is -> navigate to CharactersView, anders blijf op loginView
     var body: some View {
-         NavigationView {
-             if sessionManager.isLoggedIn {
-                 CharactersView()
-             } else {
-                 loginView
-             }
-         }
+        NavigationStack {
+            if sessionManager.isLoggedIn {
+                CharactersView()
+            } else {
+                loginView
+            }
+        }
          .environmentObject(sessionManager)
          .alert(isPresented: .constant(!errorMessage.isEmpty)) {
              Alert(

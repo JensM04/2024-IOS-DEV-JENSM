@@ -23,14 +23,18 @@ struct ComicListView: View {
             } else {
                 ScrollView {
                     LazyVGrid(
-                        columns: [GridItem(.flexible())],
+                        columns: Array(
+                            repeating: GridItem(.flexible(), spacing: 16),
+                            count: UIDevice.current.userInterfaceIdiom == .pad ? 2 : 1
+                        ),
                         spacing: 20
                     ) {
                         ForEach(viewModel.comics, id: \.id) { comic in
                             ComicCard(comic: comic)
+                                .frame(maxWidth: .infinity)
                         }
                     }
-                    .padding()
+                    .padding(.horizontal)
                 }
             }
         }

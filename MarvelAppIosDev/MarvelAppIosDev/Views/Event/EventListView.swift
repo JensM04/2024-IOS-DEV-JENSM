@@ -22,13 +22,14 @@ struct EventListView: View {
                 EventEmptyStateView()
             } else {
                 ScrollView {
-                    LazyVStack(spacing: 20) {
+                    LazyVStack(spacing: 24) {
                         ForEach(viewModel.events, id: \.id) { event in
                             EnhancedEventCard(event: event)
                         }
                     }
-                    .padding()
+                    .padding(.vertical, 24)
                 }
+                .padding(.horizontal, UIDevice.current.userInterfaceIdiom == .pad ? 32 : 16)
             }
         }
         .onAppear {
@@ -44,7 +45,11 @@ struct EventListView: View {
 struct EnhancedEventCard: View {
     let event: Event
     @State private var isExpanded = false
-    @State private var imageHeight: CGFloat = 200
+    @Environment(\.horizontalSizeClass) private var sizeClass
+    
+    private var imageHeight: CGFloat {
+        UIDevice.current.userInterfaceIdiom == .pad ? 300 : 200
+    }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -55,12 +60,12 @@ struct EnhancedEventCard: View {
                     image
                         .resizable()
                         .aspectRatio(contentMode: .fill)
-                        .frame(height: 200)
+                        .frame(height: imageHeight)
                         .clipped()
                 } placeholder: {
                     Rectangle()
                         .fill(Color.gray.opacity(0.2))
-                        .frame(height: 200)
+                        .frame(height: imageHeight)
                         .overlay(
                             ProgressView()
                                 .tint(.red)
@@ -68,47 +73,47 @@ struct EnhancedEventCard: View {
                 }
             }
 
-            
-            //titel
-            VStack(alignment: .leading, spacing: 12) {
-                Text(event.title)
-                    .font(.title3)
-                    .fontWeight(.bold)
-                    .foregroundColor(.primary)
+            VStack(alignment: .leading, spacing: 16) {
+                //titel + pijltje voor expand
+                HStack {
+                    Text(event.title)
+                        .font(sizeClass == .regular ? .title2 : .title3)
+                        .fontWeight(.bold)
+                        .foregroundColor(.primary)
+                    
+                    Spacer()
+                    
+                    Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
+                        .foregroundColor(.red)
+                        .font(.headline)
+                }
+                .padding(.top, 16)
                 
                 //start en eind datum event
-                HStack(spacing: 16) {
+                HStack(spacing: adaptiveSpacing) {
                     DateView(label: "Starts", date: formatDate(event.start))
+                    Divider()
+                        .frame(height: 24)
                     DateView(label: "Ends", date: formatDate(event.end))
                 }
+                .padding(.vertical, 8)
+                .padding(.horizontal, 12)
+                .background(Color.gray.opacity(0.1))
+                .cornerRadius(8)
                 
                 //omschrijving
-                VStack(alignment: .leading, spacing: 8) {
-                    if let description = event.description, !description.isEmpty {
-                        Text(description)
-                            .font(.body)
-                            .foregroundColor(.secondary)
-                            .lineLimit(isExpanded ? nil : 3)
-                            .animation(.easeInOut, value: isExpanded)
-                        
-                        Button(action: {
-                            withAnimation {
-                                isExpanded.toggle()
-                            }
-                        }) {
-                            Text(isExpanded ? "Show Less" : "Read More")
-                                .font(.subheadline)
-                                .fontWeight(.medium)
-                                .foregroundColor(.red)
-                        }
-                    } else {
-                        Text("No description available.")
-                            .font(.body)
-                            .foregroundColor(.gray)
-                    }
+                if let description = event.description, !description.isEmpty {
+                    Text(description)
+                        .font(.body)
+                        .foregroundColor(.secondary)
+                        .lineLimit(isExpanded ? nil : 3)
+                } else {
+                    Text("No description available.")
+                        .font(.body)
+                        .foregroundColor(.gray)
                 }
             }
-            .padding(16)
+            .padding(20)
         }
         .background(
             RoundedRectangle(cornerRadius: 16)
@@ -119,6 +124,16 @@ struct EnhancedEventCard: View {
             RoundedRectangle(cornerRadius: 16)
                 .stroke(Color.gray.opacity(0.2), lineWidth: 1)
         )
+        .animation(.easeInOut, value: isExpanded)
+        .onTapGesture {
+            withAnimation {
+                isExpanded.toggle()
+            }
+        }
+    }
+    
+    private var adaptiveSpacing: CGFloat {
+        UIDevice.current.userInterfaceIdiom == .pad ? 24 : 16
     }
     
     private func formatDate(_ dateString: String) -> String {
@@ -132,27 +147,27 @@ struct EnhancedEventCard: View {
         if let date = customFormatter.date(from: dateString) {
             return displayFormatter.string(from: date)
         }
-        
         return "Unknown"
     }
-
-
 }
 
 struct DateView: View {
     let label: String
     let date: String
+    @Environment(\.horizontalSizeClass) private var sizeClass
     
     var body: some View {
-        HStack(spacing: 4) {
+        HStack(spacing: 8) {
             Image(systemName: "calendar")
                 .foregroundColor(.red)
-            VStack(alignment: .leading, spacing: 2) {
+                .imageScale(sizeClass == .regular ? .large : .medium)
+            
+            VStack(alignment: .leading, spacing: 4) {
                 Text(label)
-                    .font(.caption)
+                    .font(sizeClass == .regular ? .subheadline : .caption)
                     .foregroundColor(.gray)
                 Text(date)
-                    .font(.caption)
+                    .font(sizeClass == .regular ? .subheadline : .caption)
                     .foregroundColor(.primary)
             }
         }
@@ -161,7 +176,7 @@ struct DateView: View {
 
 struct EventLoadingView: View {
     var body: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: 16) {
             ProgressView()
                 .scaleEffect(1.5)
                 .tint(.red)
@@ -174,22 +189,26 @@ struct EventLoadingView: View {
 }
 
 struct EventEmptyStateView: View {
+    @Environment(\.horizontalSizeClass) private var sizeClass
+    
     var body: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: 24) {
             Image(systemName: "calendar.badge.exclamationmark")
-                .font(.system(size: 60))
+                .font(.system(size: sizeClass == .regular ? 80 : 60))
                 .foregroundColor(.red)
             
-            Text("No Events Found")
-                .font(.title2)
-                .bold()
-                .foregroundColor(.primary)
-            
-            Text("The events for this character couldn't be found.")
-                .font(.body)
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 32)
+            VStack(spacing: 12) {
+                Text("No Events Found")
+                    .font(sizeClass == .regular ? .title : .title2)
+                    .bold()
+                    .foregroundColor(.primary)
+                
+                Text("The events for this character couldn't be found.")
+                    .font(sizeClass == .regular ? .title3 : .body)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, sizeClass == .regular ? 48 : 32)
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
