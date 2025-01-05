@@ -28,8 +28,7 @@ struct CharactersView: View {
                         ComicListView(viewModel: viewModel, isForAllComics: true)
                               .tag(1)
                         
-                        Text("Events").tag(2)
-                        Text("Series").tag(3)
+                        ListsView().tag(2)
                     }
                 }
                 

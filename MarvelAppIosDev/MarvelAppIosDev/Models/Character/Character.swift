@@ -17,7 +17,7 @@ struct CharacterDataContainer: Codable {
     let results: [Character]?
 }
 
-struct Character: Codable {
+struct Character: Identifiable, Codable {
     let id: Int?
     let name: String?
     let description: String?

@@ -20,6 +20,7 @@ class MarvelViewModel: ObservableObject {
     private let charactersPerPage = 20
     @Published var comicsTotalPages: Int = 20
     private let comicsPerPage = 20
+    @Published var showListSelection = false
     private let repository: MarvelRepositoryProtocol
 
     init(repository: MarvelRepositoryProtocol = MarvelRepository()) {

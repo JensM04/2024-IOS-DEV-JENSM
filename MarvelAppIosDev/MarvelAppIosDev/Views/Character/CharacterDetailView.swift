@@ -61,6 +61,7 @@ struct CharacterDetailView: View {
                         Text(description)
                             .font(.body)
                             .lineSpacing(4)
+                            .foregroundColor(.primary)
                     } else {
                         Text("No description available.")
                             .font(.body)
@@ -69,12 +70,11 @@ struct CharacterDetailView: View {
                 }
                 .padding(.horizontal)
                 
-                VStack(spacing: 12) {
+                VStack(spacing: 16) {
                     Text("Explore More")
                         .font(.title3)
                         .bold()
                         .foregroundColor(.red)
-                        .padding(.top)
                     
                     //buttons
                     LazyVGrid(columns: [
@@ -92,16 +92,43 @@ struct CharacterDetailView: View {
                         NavigationButton(title: "Events", icon: "star.fill") {
                             EventListView(viewModel: viewModel)
                                 .onAppear {
-                                        viewModel.fetchEvents(characterId: character.id ?? 0)
+                                    viewModel.fetchEvents(characterId: character.id ?? 0)
                                 }
                         }
                         
                         NavigationButton(title: "Series", icon: "rectangle.stack.fill") {
                             SeriesListView(viewModel: viewModel, characterId: character.id ?? 0)
                                 .onAppear {
-                                        viewModel.fetchEvents(characterId: character.id ?? 0)
+                                    viewModel.fetchEvents(characterId: character.id ?? 0)
                                 }
                         }
+                    }
+                    
+                    //listbutton
+                    Button(action: {
+                        viewModel.showListSelection = true
+                    }) {
+                        HStack {
+                            Image(systemName: "plus.circle.fill")
+                            Text("Add to List")
+                                .font(.body)
+                                .bold()
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 14, weight: .semibold))
+                                .opacity(0.7)
+                        }
+                        .padding()
+                        .background(
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color.red)
+                                .shadow(color: .red.opacity(0.3), radius: 5, x: 0, y: 2)
+                        )
+                        .foregroundColor(.white)
+                    }
+                    .padding(.horizontal)
+                    .sheet(isPresented: $viewModel.showListSelection) {
+                        ListSelectionSheet(character: character)
                     }
                 }
                 .padding()
@@ -109,6 +136,7 @@ struct CharacterDetailView: View {
                 .cornerRadius(16)
                 .padding(.horizontal)
             }
+            .padding(.top)
         }
         .navigationTitle(character.name ?? "Unknown Character")
         .navigationBarTitleDisplayMode(.large)
