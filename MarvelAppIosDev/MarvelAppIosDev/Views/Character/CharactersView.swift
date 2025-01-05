@@ -34,13 +34,13 @@ struct CharactersView: View {
                     }
                 }
 
-                SideMenuView(isShowing: $showMenu, selectedTab: $selectedTab)
+                SideMenuView(isShowing: $showMenu, selectedTab: $selectedTab).zIndex(1)
 
                 //paginatie
                 if selectedTab == 0 {
                     VStack {
                         Spacer()
-                        paginationButtons
+                        paginationButtons.zIndex(0)
                     }
                 }
             }
