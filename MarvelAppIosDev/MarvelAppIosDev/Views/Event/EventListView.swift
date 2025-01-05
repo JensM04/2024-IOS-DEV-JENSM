@@ -49,35 +49,25 @@ struct EnhancedEventCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             //foto
-            if let thumbnail = event.thumbnail {
-                GeometryReader { geometry in
-                    AsyncImage(url: URL(string: "\(thumbnail.path).\(thumbnail.extension)")) { phase in
-                        switch phase {
-                        case .success(let image):
-                            image
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                        case .failure(_):
-                            Color.gray.opacity(0.3)
-                        case .empty:
+            if let thumbnailPath = event.thumbnail?.fullPath,
+               let url = URL(string: thumbnailPath) {
+                AsyncImage(url: url) { image in
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(height: 200)
+                        .clipped()
+                } placeholder: {
+                    Rectangle()
+                        .fill(Color.gray.opacity(0.2))
+                        .frame(height: 200)
+                        .overlay(
                             ProgressView()
-                                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        @unknown default:
-                            Color.gray.opacity(0.3)
-                        }
-                    }
-                    .frame(width: geometry.size.width, height: imageHeight)
-                    .clipped()
-                    .overlay(
-                        LinearGradient(
-                            gradient: Gradient(colors: [.clear, .black.opacity(0.7)]),
-                            startPoint: .top,
-                            endPoint: .bottom
+                                .tint(.red)
                         )
-                    )
                 }
-                .frame(height: imageHeight)
             }
+
             
             //titel
             VStack(alignment: .leading, spacing: 12) {
@@ -132,15 +122,21 @@ struct EnhancedEventCard: View {
     }
     
     private func formatDate(_ dateString: String) -> String {
-        let formatter = ISO8601DateFormatter()
         let displayFormatter = DateFormatter()
         displayFormatter.dateStyle = .medium
+        displayFormatter.timeStyle = .none
         
-        if let date = formatter.date(from: dateString) {
+        let customFormatter = DateFormatter()
+        customFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        
+        if let date = customFormatter.date(from: dateString) {
             return displayFormatter.string(from: date)
         }
+        
         return "Unknown"
     }
+
+
 }
 
 struct DateView: View {
